@@ -1,0 +1,57 @@
+#imports
+from scipy.integrate import odeint
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+
+#criação da lista do tempo de 0 a 15 segundos com um intervalo de 0.01 segundos.
+t=np.arange(0,15,0.01)
+
+#medidas 
+#raio ou corda do pêndulo
+r=2
+#massa da bolinha
+m=0.01487
+#gravidade
+g=9.8
+#lista Y com medidas iniciais do ângulo teta e da velocidade angular
+Y=[math.pi/4,0]
+
+#definindo função que retorna o teta e a velocidade angular do prómixo momento
+def eq(Y,t):
+	teta=Y[0]
+	w=Y[1]
+
+	dtetadt=w
+	dwdt=-g*math.sin(math.radians(teta))/r
+
+	return dtetadt,dwdt
+
+#calcula a derivada de teta e da velocidade angular
+sol=odeint(eq,Y,t)
+#lista para as posições da bolinha em x
+listax=[]
+#lista para as posições da bolinha em y
+listay=[]
+#lista para a Tração da corda do pêndulo
+listaT=[]
+
+#adicionando os valores da Tração calculado para cada velocidade angular (w)
+#e para cada teta
+for teta in sol[:,0]:
+	for w in sol[:,1]:
+		T=m*g*math.cos(math.radians(teta))+m*w*w*r
+	listaT.append(T)
+#usando a fórmula trigonométrica: lado=seno(teta)*raio e adicionando nas listas
+	x=math.sin(teta)*r
+	y=-math.cos(teta)*r
+	listax.append(x)
+	listay.append(y)
+
+#plotando o gráfico da Trajetória do pêndulo
+plt.plot(listax,listay)
+plt.title('Trejetória do pêndulo')
+plt.xlabel('Posição do pêndulo no eixo x')
+plt.ylabel('Posição do pêndulo eixo y')
+plt.axis("equal")
+plt.show()
